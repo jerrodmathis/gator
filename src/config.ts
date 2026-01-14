@@ -8,28 +8,30 @@ interface Config {
 }
 
 function getConfigFilePath(): string {
-  return path.join(os.homedir(), ".gatorconfig.json");
+  const home = os.homedir();
+  return path.join(home, ".gatorconfig.json");
 }
 
 function writeConfig(cfg: Config): void {
-  const configToSave = {
+  const path = getConfigFilePath();
+  const rawConfig = {
     db_url: cfg.dbUrl,
     current_user_name: cfg.currentUserName,
   };
-
-  fs.writeFileSync(getConfigFilePath(), JSON.stringify(configToSave), "utf8");
+  const data = JSON.stringify(rawConfig, null, 2);
+  fs.writeFileSync(path, data, "utf8");
 }
 
 function validateConfig(rawConfig: any): Config {
-  if (typeof rawConfig !== "object" || rawConfig === null) {
-    throw new Error("rawConfig should be an object");
+  if (!rawConfig.db_url || typeof rawConfig.db_url !== "string") {
+    throw new Error("db_url is required in config");
   }
 
   if (
-    !Object.hasOwn(rawConfig, "db_url") &&
-    !Object.hasOwn(rawConfig, "current_user_name")
+    !rawConfig.current_user_name ||
+    typeof rawConfig.current_user_name !== "string"
   ) {
-    throw new Error("rawConfig must have db_url and current_user_name");
+    throw new Error("current_user_name is required in config");
   }
 
   return {
@@ -39,14 +41,14 @@ function validateConfig(rawConfig: any): Config {
 }
 
 export function setUser(name: string): void {
-  const currConfig = readConfig();
-  writeConfig({
-    dbUrl: currConfig.dbUrl,
-    currentUserName: name,
-  });
+  const config = readConfig();
+  config.currentUserName = name;
+  writeConfig(config);
 }
 
 export function readConfig(): Config {
-  const cfg = fs.readFileSync(getConfigFilePath(), "utf8");
-  return validateConfig(JSON.parse(cfg));
+  const path = getConfigFilePath();
+  const data = fs.readFileSync(path, "utf8");
+  const rawConfig = JSON.parse(data);
+  return validateConfig(rawConfig);
 }
