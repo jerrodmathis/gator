@@ -1,5 +1,6 @@
 import {
   createFeedFollow,
+  deleteFeedFollow,
   getFeedFollowsForUser,
 } from "src/lib/db/queries/feed_follows";
 import { getFeedByURL } from "src/lib/db/queries/feeds";
@@ -31,4 +32,22 @@ export const listFollowsHandler: UserCommandHandler = async (
 ) => {
   const follows = await getFeedFollowsForUser(user.id);
   follows.forEach((follow) => console.log(`* ${follow.feedName}`));
+};
+
+export const unfollowFeedHandler: UserCommandHandler = async (
+  cmdName,
+  user,
+  ...args
+) => {
+  if (args.length !== 1) {
+    throw new Error(`usage: ${cmdName} <feedURL>`);
+  }
+
+  const feedURL = args[0];
+  const existingFeed = await getFeedByURL(feedURL);
+  if (!existingFeed) {
+    throw new Error(`${feedURL} does not exist`);
+  }
+
+  await deleteFeedFollow(user.id, feedURL);
 };
