@@ -1,6 +1,7 @@
 import { deleteUsers } from "../lib/db/queries/users";
+import { CommandHandler } from "./commands";
 
-export async function resetHandler() {
+export const resetHandler: CommandHandler = async () => {
   await deleteUsers();
   console.log("Database reset successfully!");
-}
+};

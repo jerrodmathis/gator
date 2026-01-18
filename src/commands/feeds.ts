@@ -1,24 +1,26 @@
 import { createFeed, getFeeds } from "src/lib/db/queries/feeds";
-import { readConfig } from "../config";
-import { getUser } from "../lib/db/queries/users";
 import { createFeedFollow } from "src/lib/db/queries/feed_follows";
+import { type UserCommandHandler } from "./middleware";
+import { type CommandHandler } from "./commands";
 
-export async function addFeedHandler(cmdName: string, ...args: string[]) {
+export const addFeedHandler: UserCommandHandler = async (
+  cmdName,
+  user,
+  ...args
+) => {
   if (args.length !== 2) {
     throw new Error(`usage: ${cmdName} <feedName> <feedURL>`);
   }
 
   const [feedName, feedURL] = args;
-  const userName = readConfig().currentUserName;
-  const existingUser = await getUser(userName);
-  const feed = await createFeed(feedName, feedURL, existingUser.id);
-  const feedFollow = await createFeedFollow(existingUser.id, feed.id);
+  const feed = await createFeed(feedName, feedURL, user.id);
+  const follow = await createFeedFollow(user.id, feed.id);
   console.log(
-    `${feedFollow.userName} added and is now following "${feedFollow.feedName}"`,
+    `${follow.userName} added and is now following "${follow.feedName}"`,
   );
-}
+};
 
-export async function listFeedsHandler(_: string) {
+export const listFeedsHandler: CommandHandler = async () => {
   const feeds = await getFeeds();
   console.log(JSON.stringify(feeds, null, 2));
-}
+};

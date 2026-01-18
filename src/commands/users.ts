@@ -1,7 +1,9 @@
-import { setUser, readConfig } from "../config";
+import { setUser } from "../config";
 import { createUser, getUser, getUsers } from "../lib/db/queries/users";
+import { CommandHandler } from "./commands";
+import { UserCommandHandler } from "./middleware";
 
-export async function loginHandler(cmdName: string, ...args: string[]) {
+export const loginHandler: CommandHandler = async (cmdName, ...args) => {
   if (args.length !== 1) {
     throw new Error(`usage: ${cmdName} <name>`);
   }
@@ -14,9 +16,9 @@ export async function loginHandler(cmdName: string, ...args: string[]) {
 
   setUser(username);
   console.log(`Logged in as ${username}!`);
-}
+};
 
-export async function registerHandler(cmdName: string, ...args: string[]) {
+export const registerHandler: CommandHandler = async (cmdName, ...args) => {
   if (args.length !== 1) {
     throw new Error(`usage: ${cmdName} <name>`);
   }
@@ -29,14 +31,15 @@ export async function registerHandler(cmdName: string, ...args: string[]) {
 
   setUser(user.name);
   console.log(`User ${user.name} created successfully!`);
-}
+};
 
-export async function listUsersHandler(_: string) {
+export const listUsersHandler: UserCommandHandler = async (
+  _cmd,
+  user,
+  _args,
+) => {
   const users = await getUsers();
-  const currentUser = readConfig().currentUserName;
-  users.forEach((user) => {
-    console.log(
-      `* ${user.name}${user.name === currentUser ? " (current)" : ""}`,
-    );
+  users.forEach((u) => {
+    console.log(`* ${u.name}${u.name === user.name ? " (current)" : ""}`);
   });
-}
+};

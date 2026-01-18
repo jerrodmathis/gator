@@ -1,7 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "..";
 import { feedFollows, feeds, users } from "../schema";
-import { getUser } from "./users";
 
 export async function createFeedFollow(userId: string, feedId: string) {
   const [newFeedFollow] = await db
@@ -25,12 +24,11 @@ export async function createFeedFollow(userId: string, feedId: string) {
   return result;
 }
 
-export async function getFeedFollowsForUser(name: string) {
-  const user = await getUser(name);
+export async function getFeedFollowsForUser(userId: string) {
   return await db
     .select({ id: feedFollows.id, userName: users.name, feedName: feeds.name })
     .from(feedFollows)
-    .where(eq(feedFollows.user_id, user.id))
+    .where(eq(feedFollows.user_id, userId))
     .innerJoin(users, eq(users.id, feedFollows.user_id))
     .innerJoin(feeds, eq(feeds.id, feedFollows.feed_id));
 }
