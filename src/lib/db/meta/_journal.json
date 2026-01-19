@@ -29,6 +29,20 @@
       "when": 1768517584898,
       "tag": "0003_optimal_blonde_phantom",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1768770506150,
+      "tag": "0004_wide_nekra",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1768801631313,
+      "tag": "0005_glossy_boomer",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,5 @@
 import { aggHandler } from "./commands/aggregate";
+import { browseHandler } from "./commands/browse";
 import {
   CommandsRegistry,
   registerCommand,
@@ -58,6 +59,7 @@ async function main() {
     "following",
     middlewareLoggedIn(listFollowsHandler),
   );
+  registerCommand(commandRegistry, "browse", middlewareLoggedIn(browseHandler));
 
   try {
     await runCommand(commandRegistry, cmdName, ...cmdArgs);

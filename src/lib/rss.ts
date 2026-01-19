@@ -25,6 +25,7 @@ export async function fetchFeed(feedURL: string): Promise<RSSFeed> {
   });
 
   if (!res.ok) {
+    console.error("Feed:", feedURL);
     throw new Error(`failed to fetch feed: ${res.status} ${res.statusText}`);
   }
 
@@ -33,13 +34,8 @@ export async function fetchFeed(feedURL: string): Promise<RSSFeed> {
   const result = parser.parse(xml);
 
   const channel = result.rss?.channel;
-  if (
-    !channel ||
-    !channel.title ||
-    !channel.link ||
-    !channel.description ||
-    !channel.item
-  ) {
+  if (!channel || !channel.title || !channel.link || !channel.item) {
+    console.error(JSON.stringify(result, null, 2));
     throw new Error("failed to parse channel");
   }
 

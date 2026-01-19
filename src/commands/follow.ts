@@ -22,7 +22,7 @@ export const followFeedHandler: UserCommandHandler = async (
   }
 
   const feedFollow = await createFeedFollow(user.id, existingFeed.id);
-  console.log(`${feedFollow.userName} followed "${feedFollow.feedName}"!`);
+  printFeedFollow(feedFollow.userName, feedFollow.feedName);
 };
 
 export const listFollowsHandler: UserCommandHandler = async (
@@ -50,4 +50,8 @@ export const unfollowFeedHandler: UserCommandHandler = async (
   }
 
   await deleteFeedFollow(user.id, feedURL);
+};
+
+export const printFeedFollow = (userName: string, feedName: string) => {
+  console.log(`${userName} just followed ${feedName}!`);
 };
